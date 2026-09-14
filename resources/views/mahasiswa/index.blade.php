@@ -1,84 +1,73 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Data Mahasiswa
-        </h2>
-    </x-slot>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Mahasiswa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+<body>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-
-                {{-- Notifikasi sukses --}}
-                @if (session('success'))
-                    <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-md">
-                        {{ session('success') }}
-                    </div>
-                @endif
-
-                {{-- Tombol Tambah --}}
-                <a href="{{ route('mahasiswa.create') }}"
-                    class="inline-block mb-4 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
-                    + Tambah Mahasiswa
-                </a>
-
-                {{-- Tabel Data --}}
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 border">
-                        <thead class="bg-gray-100">
-                            <tr>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase border">No</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase border">NIM</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase border">Nama</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase border">Program Studi</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase border">No HP</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase border">Email</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase border">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @forelse ($mahasiswas as $index => $mhs)
-                                <tr>
-                                    <td class="px-4 py-2 border">{{ $mahasiswas->firstItem() + $index }}</td>
-                                    <td class="px-4 py-2 border">{{ $mhs->nim }}</td>
-                                    <td class="px-4 py-2 border">{{ $mhs->nama }}</td>
-                                    <td class="px-4 py-2 border">{{ $mhs->program_studi }}</td>
-                                    <td class="px-4 py-2 border">{{ $mhs->no_hp }}</td>
-                                    <td class="px-4 py-2 border">{{ $mhs->email }}</td>
-                                    <td class="px-4 py-2 border">
-                                        <div class="flex gap-3">
-                                            <a href="{{ route('mahasiswa.show', $mhs->id) }}"
-                                                class="text-blue-600 hover:underline text-sm">Detail</a>
-                                            <a href="{{ route('mahasiswa.edit', $mhs->id) }}"
-                                                class="text-yellow-600 hover:underline text-sm">Edit</a>
-                                            <form action="{{ route('mahasiswa.destroy', $mhs->id) }}" method="POST"
-                                                onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:underline text-sm">
-                                                    Hapus
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="px-4 py-4 text-center text-gray-500 border">
-                                        Belum ada data mahasiswa.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                {{-- Pagination --}}
-                <div class="mt-4">
-                    {{ $mahasiswas->links() }}
-                </div>
-
-            </div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light px-3">
+        <a class="navbar-brand" href="/dashboard">Aplikasi Mahasiswa</a>
+        <div>
+            <a href="/dashboard" class="btn btn-sm btn-outline-primary me-2">Dashboard</a>
+            <a href="/mahasiswa" class="btn btn-sm btn-outline-primary me-2">Data Mahasiswa</a>
+            <form action="/logout" method="POST" class="d-inline">
+                @csrf
+                <button type="submit" class="btn btn-sm btn-outline-danger">Logout</button>
+            </form>
         </div>
+    </nav>
+
+    <div class="container mt-4">
+        <p class="fs-4">Data Mahasiswa</p>
+
+        @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+
+        <a class="btn btn-primary mb-3" href="/mahasiswa/create" role="button">Tambah Data</a>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">NIM</th>
+                    <th scope="col">Nama</th>
+                    <th scope="col">Program Studi</th>
+                    <th scope="col">No HP</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($mahasiswas as $index => $mhs)
+                <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $mhs->nim }}</td>
+                    <td>{{ $mhs->nama }}</td>
+                    <td>{{ $mhs->program_studi }}</td>
+                    <td>{{ $mhs->no_hp }}</td>
+                    <td>{{ $mhs->email }}</td>
+                    <td>
+                        <a class="btn btn-sm btn-info" href="/mahasiswa/{{ $mhs->id }}" role="button">Detail</a>
+                        <a class="btn btn-sm btn-warning" href="/mahasiswa/edit/{{ $mhs->id }}" role="button">Edit</a>
+                        <a class="btn btn-sm btn-danger" href="/mahasiswa/delete/{{ $mhs->id }}" role="button"
+                           onclick="return confirm('Yakin ingin menghapus data ini?')">Delete</a>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" class="text-center">Belum ada data mahasiswa.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
-</x-app-layout>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

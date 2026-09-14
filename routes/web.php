@@ -28,15 +28,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('mahasiswa', MahasiswaController::class);
-});
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    Route::resource('mahasiswa', MahasiswaController::class);
+    Route::get('/mahasiswa', [MahasiswaController::class, 'index']);
+    Route::get('/mahasiswa/create', [MahasiswaController::class, 'create']);
+    Route::post('/mahasiswa/buat', [MahasiswaController::class, 'buat']);
+    Route::get('/mahasiswa/{id}', [MahasiswaController::class, 'show']);
+    Route::get('/mahasiswa/edit/{id}', [MahasiswaController::class, 'edit']);
+    Route::post('/mahasiswa/update/{id}', [MahasiswaController::class, 'update']);
+    Route::get('/mahasiswa/delete/{id}', [MahasiswaController::class, 'delete']);
 });
 
 require __DIR__.'/auth.php';

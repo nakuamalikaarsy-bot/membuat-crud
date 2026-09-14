@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mahasiswa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class MahasiswaController extends Controller
 {
     public function index()
     {
-        $mahasiswas = Mahasiswa::latest()->paginate(10);
+        $mahasiswas = DB::table('mahasiswa')->get();
         return view('mahasiswa.index', compact('mahasiswas'));
     }
 
@@ -18,10 +18,10 @@ class MahasiswaController extends Controller
         return view('mahasiswa.create');
     }
 
-    public function store(Request $request)
+    public function buat(Request $request)
     {
-        $validated = $request->validate([
-            'nim' => 'required|string|max:15|unique:mahasiswas,nim',
+        $request->validate([
+            'nim' => 'required|string|max:15|unique:mahasiswa,nim',
             'nama' => 'required|string|max:255',
             'tempat_lahir' => 'required|string|max:255',
             'tanggal_lahir' => 'required|date',
@@ -29,29 +29,42 @@ class MahasiswaController extends Controller
             'alamat' => 'required|string',
             'program_studi' => 'required|string|max:255',
             'no_hp' => 'required|string|max:15',
-            'email' => 'required|email|unique:mahasiswas,email',
+            'email' => 'required|email|unique:mahasiswa,email',
         ]);
 
-        Mahasiswa::create($validated);
+        DB::table('mahasiswa')->insert([
+            'nim' => $request->nim,
+            'nama' => $request->nama,
+            'tempat_lahir' => $request->tempat_lahir,
+            'tanggal_lahir' => $request->tanggal_lahir,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'alamat' => $request->alamat,
+            'program_studi' => $request->program_studi,
+            'no_hp' => $request->no_hp,
+            'email' => $request->email,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
-        return redirect()->route('mahasiswa.index')
-            ->with('success', 'Data mahasiswa berhasil ditambahkan.');
+        return redirect('/mahasiswa');
     }
 
-    public function show(Mahasiswa $mahasiswa)
+    public function show($id)
     {
-        return view('mahasiswa.show', compact('mahasiswa'));
+        $mahasiswa = DB::table('mahasiswa')->where('id', $id)->first();
+        return view('mahasiswa.show', ['mahasiswa' => $mahasiswa]);
     }
 
-    public function edit(Mahasiswa $mahasiswa)
+    public function edit($id)
     {
-        return view('mahasiswa.edit', compact('mahasiswa'));
+        $mahasiswa = DB::table('mahasiswa')->where('id', $id)->first();
+        return view('mahasiswa.edit', ['mahasiswa' => $mahasiswa]);
     }
 
-    public function update(Request $request, Mahasiswa $mahasiswa)
+    public function update($id, Request $request)
     {
-        $validated = $request->validate([
-            'nim' => 'required|string|max:15|unique:mahasiswas,nim,' . $mahasiswa->id,
+        $request->validate([
+            'nim' => 'required|string|max:15|unique:mahasiswa,nim,' . $id,
             'nama' => 'required|string|max:255',
             'tempat_lahir' => 'required|string|max:255',
             'tanggal_lahir' => 'required|date',
@@ -59,20 +72,28 @@ class MahasiswaController extends Controller
             'alamat' => 'required|string',
             'program_studi' => 'required|string|max:255',
             'no_hp' => 'required|string|max:15',
-            'email' => 'required|email|unique:mahasiswas,email,' . $mahasiswa->id,
+            'email' => 'required|email|unique:mahasiswa,email,' . $id,
         ]);
 
-        $mahasiswa->update($validated);
+        DB::table('mahasiswa')->where('id', $id)->update([
+            'nim' => $request->nim,
+            'nama' => $request->nama,
+            'tempat_lahir' => $request->tempat_lahir,
+            'tanggal_lahir' => $request->tanggal_lahir,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'alamat' => $request->alamat,
+            'program_studi' => $request->program_studi,
+            'no_hp' => $request->no_hp,
+            'email' => $request->email,
+            'updated_at' => now(),
+        ]);
 
-        return redirect()->route('mahasiswa.index')
-            ->with('success', 'Data mahasiswa berhasil diperbarui.');
+        return redirect('/mahasiswa');
     }
 
-    public function destroy(Mahasiswa $mahasiswa)
+    public function delete($id)
     {
-        $mahasiswa->delete();
-
-        return redirect()->route('mahasiswa.index')
-            ->with('success', 'Data mahasiswa berhasil dihapus.');
+        DB::table('mahasiswa')->where('id', $id)->delete();
+        return redirect('/mahasiswa');
     }
 }
